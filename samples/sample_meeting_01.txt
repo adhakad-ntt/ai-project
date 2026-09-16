@@ -1,0 +1,9 @@
+Project: Order Renewal Automation
+Meeting 1
+
+Business wants approved Salesforce renewal orders sent to Oracle automatically.
+Only approved orders should be synchronized.
+The business expects the integration to preserve the Salesforce order identifier in Oracle.
+Users need visibility when an order fails to synchronize.
+The acceptable synchronization delay has not yet been agreed.
+Retry behavior and the maximum retry count have not yet been defined.

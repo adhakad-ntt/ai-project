@@ -1,0 +1,6 @@
+Project: Order Renewal Automation
+Meeting 2
+
+The business confirmed that approved renewal orders should reach Oracle within 10 minutes.
+Failed messages should be retried three times before being marked for manual review.
+Support users need the Salesforce order identifier, Oracle response, error reason, and correlation identifier for troubleshooting.

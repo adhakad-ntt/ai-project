@@ -1,0 +1,9 @@
+streamlit==1.63.0
+langgraph==1.2.11
+python-dotenv==1.2.3
+pydantic==2.13.5
+pypdf==6.18.0
+python-docx==1.2.0
+scikit-learn==1.9.0
+requests==2.34.2
+pytest==9.1.1
