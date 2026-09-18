@@ -11,6 +11,22 @@ A runnable VS Code / Streamlit proof of concept for AI-assisted requirement anal
 
 Technical/API specification generation remains Phase 2.
 
+## Project chatbot
+
+The right-hand Project assistant answers questions using the selected project's
+description, saved requirement analysis, and relevant uploaded document passages.
+It includes earlier conversation messages to support follow-up questions.
+Use **New chat** for a fresh conversation or **Recent chats** to reopen and
+continue a saved conversation. Each new browser session starts with a blank chat.
+The right panel can be minimized and reopened without losing the active chat;
+minimizing it gives the main workspace the available width.
+Conversations are stored separately in `data/projects/<project-id>/knowledge/chats/`.
+Older `chat_history.json` files appear as Previous conversation in Recents.
+Saved chats are scoped to the project and shared by users of this local POC.
+A configured Groq API key is required; chatting uses the existing model
+configuration. Very long conversations may eventually exceed the model's context
+limit. Chat does not edit the project's requirements or documents.
+
 ## Architecture
 
 ```text

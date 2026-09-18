@@ -11,5 +11,9 @@ def run(project_id: str, llm: LLMService) -> AnalysisResult:
     user=f'''Analyze the following project knowledge. Return JSON with keys requirements, gaps, assumptions, contradictions.
 Each requirement: id,type,title,description,priority,source_refs,status.
 Each gap: id,category,description,severity,business_impact,question,question_type,related_requirement_ids.
-Use stable IDs like REQ-001 and GAP-001.\n\n{context}'''
+Requirement type must be business, functional, non-functional, integration, data, security, or operational.
+Priority and severity must be high, medium, or low. Requirement status must be new.
+Question type must be business or technical. source_refs and related_requirement_ids must be arrays of strings.
+Assumptions and contradictions must be arrays of strings.
+Use stable IDs like REQ-001 and GAP-001. Keep descriptions concise and avoid duplicate requirements.\n\n{context}'''
     return AnalysisResult.model_validate(llm.json_chat(SYSTEM,user))
