@@ -111,6 +111,15 @@ class RequirementAnalysisWorkflow:
                     else 'changed'
                 )
 
+        # Explicitly approved chat requirements take precedence over extraction.
+        overrides = previous.get('_chat_requirement_overrides', {})
+        if overrides:
+            current['requirements'] = [
+                r for r in current.get('requirements', []) if r['id'] not in overrides
+            ] + list(overrides.values())
+            current['_chat_requirement_overrides'] = overrides
+        if previous.get('_chat_changes'):
+            current['_chat_changes'] = previous['_chat_changes']
         return {'analysis': current, 'status': 'changes_reconciled'}
 
     def _persist_analysis(self, state: WorkflowState) -> WorkflowState:

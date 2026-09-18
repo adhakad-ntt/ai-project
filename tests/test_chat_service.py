@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 import pytest
 from streamlit.testing.v1 import AppTest
@@ -43,7 +44,7 @@ def test_ui_recent_chats_and_minimize(projects, monkeypatch):
     calls = []
     def respond(self, messages):
         calls.append(messages)
-        return 'Saved answer'
+        return json.dumps({'answer': 'Saved answer', 'change': None})
     monkeypatch.setattr(LLMService, 'configured', lambda self: True)
     monkeypatch.setattr(LLMService, 'chat_messages', respond)
     path = str(Path(__file__).resolve().parents[1] / 'app.py')

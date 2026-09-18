@@ -25,7 +25,15 @@ Older `chat_history.json` files appear as Previous conversation in Recents.
 Saved chats are scoped to the project and shared by users of this local POC.
 A configured Groq API key is required; chatting uses the existing model
 configuration. Very long conversations may eventually exceed the model's context
-limit. Chat does not edit the project's requirements or documents.
+limit. Chat can propose project description changes and add or update requirements.
+Every change displays the exact before and after values and requires a separate
+**Approve change** click. **Reject change** leaves project data untouched; typing
+approval in chat cannot apply edits. Only one change can be reviewed at a time.
+Pending proposals are session-only and discarded when starting or reopening a chat.
+Stale proposals are blocked if the saved data changed after the preview.
+Approved changes are recorded in `_chat_changes` in the updated JSON file.
+Approved requirements are preserved during subsequent AI analysis; documents and
+diagrams must be regenerated separately using the existing workspace controls.
 
 ## Architecture
 
