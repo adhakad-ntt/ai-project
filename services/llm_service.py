@@ -70,7 +70,12 @@ class LLMService:
                     verify=self.ca_bundle or True,
                 )
             except requests.exceptions.SSLError:
-                raise RuntimeError('Could not verify the AI endpoint certificate. Check the configured CA certificate.') from None
+                raise RuntimeError(
+                    'Could not verify the AI endpoint certificate. Ask IT to install the company CA '
+                    'in the Windows trusted certificate store, or set GROQ_CA_CERT in .env to an '
+                    'IT-provided PEM CA bundle. Check REQUESTS_CA_BUNDLE and CURL_CA_BUNDLE too; '
+                    'they take precedence. Restart the app after updating certificates.'
+                ) from None
             except (requests.ConnectionError, requests.Timeout):
                 if attempt == 2:
                     raise RuntimeError('The AI connection failed after three attempts. Please check your network or proxy and try again.') from None

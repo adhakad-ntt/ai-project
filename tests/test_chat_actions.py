@@ -143,5 +143,6 @@ def test_requirement_review_shows_changed_fields_and_related_context(project):
     assert next(row for row in rows if row['Field'] == 'Priority')['Change'] == 'Unchanged'
     assert next(row for row in rows if row['Field'] == 'Source references')['Existing information']
     assert app.table[1].value.iloc[0]['Question'] == 'Who approves the demo?'
-    assert not app.code
+    # Saved analysis has a share-text preview; the proposed edit is reviewed in a table.
+    assert not any('15 March' in block.value for block in app.code)
     assert not app.json

@@ -10,6 +10,10 @@ from uuid import uuid4
 
 from models.schemas import Requirement
 from services.project_service import load_json, project_path
+from utils.mermaid_source import normalize_mermaid
+
+DIAGRAM_FILES = {'Process Flow': 'process_flow.mmd', 'Sequence': 'sequence.mmd',
+                 'Architecture': 'architecture.mmd'}
 
 
 def change_review_rows(proposal: dict) -> list[dict]:
@@ -64,8 +68,27 @@ def prepare_change(project_id: str, conversation_id: str, change: dict) -> dict:
         if len(matches) > 1:
             raise ValueError('Duplicate requirement ID; resolve it before editing.')
         before = matches[0] if matches else None
+    elif target == 'diagram':
+        if not isinstance(value, dict) or set(value) != {'diagram_type', 'code'}:
+            raise ValueError('A diagram type and complete Mermaid code are required.')
+        kind = value['diagram_type']
+        if not isinstance(kind, str) or kind not in DIAGRAM_FILES or not isinstance(value['code'], str):
+            raise ValueError('Invalid diagram type or source.')
+        relative = 'diagrams/' + DIAGRAM_FILES[kind]
+        path = project_path(project_id) / relative
+        if not path.exists():
+            raise ValueError('Generate this diagram before requesting edits in chat.')
+        current = path.read_text(encoding='utf-8')
+        before = {'diagram_type': kind, 'code': current}
+        code = normalize_mermaid(value['code'])
+        statements = [line.strip() for line in code.splitlines()
+                      if line.strip() and not line.lstrip().startswith('%%')]
+        header = r'^sequenceDiagram\s*$' if kind == 'Sequence' else r'^(flowchart|graph)\s+(TD|TB|BT|LR|RL)\s*;?$'
+        if len(statements) < 2 or not re.match(header, statements[0]):
+            raise ValueError('The proposal must contain a complete diagram of the selected type.')
+        value = {'diagram_type': kind, 'code': code}
     else:
-        raise ValueError('Only project descriptions and requirements can be changed from chat.')
+        raise ValueError('Only project descriptions, requirements and existing diagrams can be changed from chat.')
     if before == value:
         raise ValueError('The proposed value is already saved.')
     return {'id': str(uuid4()), 'project_id': project_id, 'conversation_id': conversation_id,
@@ -82,6 +105,16 @@ def apply_change(proposal: dict, project_id: str, conversation_id: str, *, appro
                              {'target': proposal['target'], 'value': proposal['after']})
     if checked['snapshot'] != proposal['snapshot']:
         raise ValueError('Project data changed since this preview. Reject it and request a fresh proposal.')
+    if proposal['target'] == 'diagram':
+        path = project_path(project_id) / checked['relative']
+        temporary = path.with_name(f'{path.name}.{uuid4().hex}.tmp')
+        try:
+            temporary.write_text(checked['after']['code'], encoding='utf-8')
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
+        proposal['status'] = 'applied'
+        return
     updated = deepcopy(checked['snapshot'])
     if proposal['target'] == 'project_description':
         updated['description'] = checked['after']

@@ -35,6 +35,15 @@ Approved changes are recorded in `_chat_changes` in the updated JSON file.
 Approved requirements are preserved during subsequent AI analysis; documents and
 diagrams must be regenerated separately using the existing workspace controls.
 
+Chat can also propose label and flow edits to an already generated Process Flow,
+Sequence, or Architecture diagram. Name the diagram in your request, for example:
+"In Architecture, rename Audit Store to Processing History" or "In Process Flow,
+add a review step before creating the work item." Review the existing and proposed
+diagrams and their Mermaid source, then click **Approve change** to save or
+**Reject change** to discard. Stale proposals cannot overwrite a newer diagram.
+Approved diagram edits update the preview and download; generating the diagram
+again replaces these direct edits. Diagram edits do not modify requirements.
+
 ## Architecture
 
 ```text
